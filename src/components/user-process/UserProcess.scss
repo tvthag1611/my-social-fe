@@ -1,6 +1,23 @@
 .user-process {
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    margin-top: 100px;
+    margin: 100px auto;
+    height: auto;
+    width: 300px;
+    border-radius: 10px;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    h3 {
+        font-weight: bold;
+        margin: 30px;
+    }
+    .more-login {
+        cursor: pointer;
+        color: tomato;
+        margin-bottom: 20px;
+    }
+    .more-login:hover {
+        color: black
+    }
 }

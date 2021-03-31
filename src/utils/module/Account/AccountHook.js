@@ -1,11 +1,9 @@
-import { useContext } from "react";
-import { AccountContext } from "./AccountContext";
 import { AccountService } from "./AccountService";
 
 const useAppAccount = () => {
-  const { account } = useContext(AccountContext);
+  const account = AccountService.get();
 
-  const setAccount = ({ newAccount }) => {
+  const setAccount = (newAccount) => {
     AccountService.set(newAccount);
   };
 

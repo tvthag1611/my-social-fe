@@ -10,14 +10,14 @@ const CommonCall = async (api, header) => {
     let headers;
     if (accessToken) {
       headers = {
-        "x-access-token": `Bearer ${accessToken}`,
-        "Content-Type": "application-json",
-        Accept: "application-json",
+        "x-access-token": `${accessToken}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
       };
     } else {
       headers = {
-        "Content-Type": "application-json",
-        Accept: "application-json",
+        "Content-Type": "application/json",
+        Accept: "application/json",
       };
     }
     let head = {
@@ -25,26 +25,8 @@ const CommonCall = async (api, header) => {
       headers,
     };
     const response = await fetch(api, { ...head });
-    if (response.status === 500) {
-      return {
-        status: response.status,
-        message: "Loi mang",
-        success: false,
-      };
-    }
-
-    if (response.status === 200) {
-      let resultConverted = await response.json();
-
-      if (resultConverted.status === 200) {
-        return {
-          success: true,
-          data: resultConverted.data,
-          status: 200,
-        };
-      }
-      return resultConverted;
-    }
+    const result = await response.json();
+    return result;
   } catch (error) {
     return {
       success: false,
@@ -55,19 +37,64 @@ const CommonCall = async (api, header) => {
 
 const FetchApi = {
   login: async (username, password) => {
+    const body = JSON.stringify({
+      username: username,
+      password: password,
+    });
     const header = {
       method: "POST",
-      body: JSON.stringify({
-        username: username,
-        password: password,
-      }),
+      body: body,
     };
     const api = `${apis}/auth/login`;
     const result = await CommonCall(api, header);
     return result;
   },
+  signup: async (data) => {
+    const account = JSON.stringify({
+      username: data.username,
+      password: data.password,
+    });
+
+    const user = JSON.stringify({
+      username: data.username,
+      displayName: data.displayName,
+    });
+
+    const headerAcc = {
+      method: "POST",
+      body: account,
+    };
+
+    const headerUser = {
+      method: "POST",
+      body: user,
+    };
+
+    const apiAcc = `${apis}/auth/register`;
+    await CommonCall(apiAcc, headerAcc);
+    const apiUser = `${apis}/users`;
+    const result = await CommonCall(apiUser, headerUser);
+
+    return result;
+  },
   uploadFile: async (file) => {
     const result = await upFile(file, `${apis}/uploads`);
+    return result;
+  },
+  getListPost: async () => {
+    const header = {
+      method: "GET",
+    };
+    const api = `${apis}/socials`;
+    const result = await CommonCall(api, header);
+    return result;
+  },
+  getUser: async (username) => {
+    const header = {
+      method: "GET",
+    };
+    const api = `${apis}/users/${username}`;
+    const result = await CommonCall(api, header);
     return result;
   },
 };
@@ -88,7 +115,7 @@ const upFile = async (file, api) => {
     const responseJSON = await result.json();
     return responseJSON;
   } catch (error) {
-    message.info("Loi mang");
+    message.error("Loi mang");
   }
 };
 

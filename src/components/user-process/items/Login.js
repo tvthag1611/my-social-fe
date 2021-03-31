@@ -1,14 +1,9 @@
 import React from "react";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, message } from "antd";
 import { FetchApi } from "utils/module/FetchAPI";
-const layout = {
-  labelCol: {
-    span: 8,
-  },
-  wrapperCol: {
-    span: 16,
-  },
-};
+import { useAppAccount } from "utils/module/Account";
+import { useHistory } from "react-router";
+
 const tailLayout = {
   wrapperCol: {
     offset: 8,
@@ -16,56 +11,56 @@ const tailLayout = {
   },
 };
 
-export default function Login() {
+export default function Login({ title }) {
+  const { account, setAccount } = useAppAccount();
+  console.log(account);
+  const history = useHistory();
   const onFinish = async (values) => {
     const username = values.username;
     const password = values.password;
     const result = await FetchApi.login(username, password);
-    console.log("login", result);
+    if (result.status === 200) {
+      message.success("login success");
+      setAccount({ ...result.data, accessToken: result.accessToken });
+      history.push("/");
+    } else {
+      message.error(result.message);
+    }
   };
 
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
   };
+
   return (
-    <Form
-      {...layout}
-      name="basic"
-      initialValues={{
-        remember: true,
-      }}
-      onFinish={onFinish}
-      onFinishFailed={onFinishFailed}
-    >
+    <Form onFinish={onFinish} onFinishFailed={onFinishFailed}>
       <Form.Item
-        label="Username"
         name="username"
         rules={[
           {
             required: true,
-            message: "Please input your username!",
+            message: "Vui lòng điền username",
           },
         ]}
       >
-        <Input />
+        <Input placeholder="Username" />
       </Form.Item>
 
       <Form.Item
-        label="Password"
         name="password"
         rules={[
           {
             required: true,
-            message: "Please input your password!",
+            message: "Vui lòng điền mật khẩu",
           },
         ]}
       >
-        <Input.Password />
+        <Input.Password placeholder="Password" />
       </Form.Item>
 
       <Form.Item {...tailLayout}>
         <Button type="primary" htmlType="submit">
-          Submit
+          {title}
         </Button>
       </Form.Item>
     </Form>
